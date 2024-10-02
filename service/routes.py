@@ -60,8 +60,19 @@ def create_accounts():
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """
+    Lists all the accounts
+    """
+    app.logger.info("List all the accounts")
+    accounts = Account.all()
+  
+    acct_list = []
+    for account in accounts: 
+        acct_list.append(account.serialize())
 
-# ... place you code here to LIST accounts ...
+    return jsonify(acct_list), status.HTTP_200_OK
 
 
 ######################################################################
@@ -74,9 +85,7 @@ def read_account(id):
     Reads an account given an account id
     """
     app.logger.info("Get the account given an account id")
-    if not id:
-        message = f"Please provide an account id"
-        abort(status.HTTP_405_METHOD_NOT_ALLOWED, message)
+    
     account = Account.find(id)
     if not account:
         message = f"Account with ID - '{id}' not found"
@@ -86,12 +95,25 @@ def read_account(id):
 
 
 
-
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
+@app.route("/accounts/<int:account_id>", methods=["PUT"])
+def update_accounts(account_id):
+    """
+    Updates an account given an account id
+    """
+    app.logger.info("Update the account given an account id")
 
-# ... place you code here to UPDATE an account ...
+    account = Account.find(account_id)
+    if not account:
+        message = f"Account with ID - '{id}' not found"
+        abort(status.HTTP_404_NOT_FOUND, message)
+    
+    account.deserialize(request.get_json())
+    account.update()
+
+    return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################

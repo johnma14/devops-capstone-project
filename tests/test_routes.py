@@ -147,7 +147,51 @@ class TestAccountService(TestCase):
         response = self.client.get(f"{BASE_URL}/{id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
-    def test_read_no_account(self):
-        """It should return an error for account not found"""
-        response = self.client.get(f"{BASE_URL}")
+    
+    def test_get_account_list(self):
+        """It should return a list of all accounts"""
+        self._create_accounts(3)
+       
+        response = self.client.get(BASE_URL)
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            "Could not return the list of accounts")
+    
+    def test_update_account(self):
+        """It should update an account given the id"""
+        """It should read an account from the account db"""
+        account = AccountFactory()
+        response = self.client.post(BASE_URL, json=account.serialize())
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test Account",
+        )
+
+        new_account = response.get_json()
+        id = new_account["id"]
+        new_account["name"] = "MJ"
+        response = self.client.put(f"{BASE_URL}/{id}", json=new_account)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["name"], "MJ")
+    
+    def test_method_not_allowed(self):
+        """It should update an account given the id"""
+        """It should read an account from the account db"""
+        account = AccountFactory()
+        response = self.client.post(BASE_URL, json=account.serialize())
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test Account",
+        )
+
+        new_account = response.get_json()
+        id = new_account["id"]
+        new_account["name"] = "MJ"
+        response = self.client.put(f"{BASE_URL}/{new_account}")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
