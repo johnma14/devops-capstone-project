@@ -180,8 +180,7 @@ class TestAccountService(TestCase):
         self.assertEqual(data["name"], "MJ")
     
     def test_method_not_allowed(self):
-        """It should update an account given the id"""
-        """It should read an account from the account db"""
+        """It should test method not allowed"""
         account = AccountFactory()
         response = self.client.post(BASE_URL, json=account.serialize())
         self.assertEqual(
@@ -195,3 +194,19 @@ class TestAccountService(TestCase):
         new_account["name"] = "MJ"
         response = self.client.put(f"{BASE_URL}/{new_account}")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def test_delete_account(self):
+        """It should delete an account"""
+        account = AccountFactory()
+        response = self.client.post(BASE_URL, json=account.serialize())
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test Account",
+        )
+
+        new_account = response.get_json()
+        id = new_account["id"]
+
+        response = self.client.delete(f"{BASE_URL}/{id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
