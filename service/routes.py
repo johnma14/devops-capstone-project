@@ -106,9 +106,6 @@ def update_accounts(account_id):
     app.logger.info("Update the account given an account id")
 
     account = Account.find(account_id)
-    if not account:
-        message = f"Account with ID - '{id}' not found"
-        abort(status.HTTP_404_NOT_FOUND, message)
     
     account.deserialize(request.get_json())
     account.update()
@@ -119,9 +116,14 @@ def update_accounts(account_id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_account(account_id):
+    """Delete an account given the id"""
+    app.logger.info("Delete an account given the id""")
+    account = Account.find(account_id)
 
-# ... place you code here to DELETE an account ...
-
+    account.delete()
+    return "", status.HTTP_204_NO_CONTENT
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
