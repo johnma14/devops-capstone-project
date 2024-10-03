@@ -149,12 +149,11 @@ class TestAccountService(TestCase):
         id = 0
         response = self.client.get(f"{BASE_URL}/{id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
-    
+
     def test_get_account_list(self):
         """It should return a list of all accounts"""
         self._create_accounts(3)
-       
+    
         response = self.client.get(BASE_URL)
         data = response.get_json()
         self.assertEqual(len(data), 3)
@@ -162,7 +161,7 @@ class TestAccountService(TestCase):
             response.status_code,
             status.HTTP_200_OK,
             "Could not return the list of accounts")
-    
+
     def test_update_account(self):
         """It should update an account given the id"""
         """It should read an account from the account db"""
@@ -181,7 +180,7 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(data["name"], "MJ")
-    
+
     def test_method_not_allowed(self):
         """It should test method not allowed"""
         account = AccountFactory()
@@ -193,11 +192,10 @@ class TestAccountService(TestCase):
         )
 
         new_account = response.get_json()
-        id = new_account["id"]
         new_account["name"] = "MJ"
         response = self.client.put(f"{BASE_URL}/{new_account}")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def test_delete_account(self):
         """It should delete an account"""
         account = AccountFactory()
@@ -233,4 +231,3 @@ class TestAccountService(TestCase):
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
-
